@@ -1,0 +1,54 @@
+#include <NewPing.h> //Does what it says
+
+NewPing sonar(12, 11, 100); //Trig, Echo, maximum distance (over the max will always = 0)
+
+unsigned int pingSpeed = 50; //50 milliseconds would be 20 times a second.
+unsigned long pingTimer;
+
+void setup() {
+  Serial.begin(115200); //Turn on COM3
+  pingTimer = millis(); //Start the Ping sensor
+  pinMode(9, OUTPUT); //9 & 10 are for the motor
+  pinMode(10, OUTPUT);
+  pinMode(13, OUTPUT); //The light on the pro mini (Just to test the Ping sensor)
+}
+
+void loop() {
+  if (millis() >= pingTimer) { //PingSpeed milliseconds since last ping, do another ping.
+    pingTimer += pingSpeed;      //Set the next ping time.
+    sonar.ping_timer(echoCheck); //Send out Ping, calls echoCheck
+  }
+}
+
+void echoCheck() { //Check the ping status.
+  if (sonar.check_timer()) { //If the ping was received...
+    Serial.print(sonar.ping_result / US_ROUNDTRIP_CM); //Serial prints on COM3
+    Serial.print("cm");
+    if ((sonar.ping_result / US_ROUNDTRIP_CM) > 15) {
+      Serial.println(" Forward");
+      forward(); //Call the forward function
+      digitalWrite(13, LOW); //Turn off the light on the pro mini (Just to test the Ping sensor)
+    }
+    else {
+      Serial.println(" Backward");
+      backward(); //Call the backward function
+      digitalWrite(13, HIGH); //Turn on the light on the pro mini (Just to test the Ping sensor)
+      delay(100000);
+    }
+  }
+}
+
+void forward() { //The forward function
+  analogWrite(9, 100);
+  analogWrite(10, 0);
+}
+
+void backward() { //The backward function
+  analogWrite(9, 0);
+  analogWrite(10, 100);
+}
+
+void off() {
+  analogWrite(9, 0);
+  analogWrite(10, 0);
+}

@@ -1,9 +1,0 @@
-void setup() {
-  pinMode(9, OUTPUT);
-}
-void loop() {
-  analogWrite(9, 10000);
-  delay(3000);
-  analogWrite(9, 0);
-  delay(3000);
-}
